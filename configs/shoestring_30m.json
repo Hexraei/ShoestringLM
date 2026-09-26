@@ -1,0 +1,12 @@
+{
+  "name": "shoestring-30m",
+  "vocab_size": 8192,
+  "d_model": 384,
+  "n_layers": 20,
+  "n_heads": 6,
+  "d_ff": 1024,
+  "max_seq_len": 512,
+  "dropout": 0.0,
+  "tie_embeddings": true,
+  "rope_theta": 10000.0
+}

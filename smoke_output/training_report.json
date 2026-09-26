@@ -1,0 +1,12 @@
+{
+  "hardware": "x86_64",
+  "device": "CPU (x86_64)",
+  "wall_time_seconds": 10.7,
+  "tokens_trained": 307200,
+  "estimated_flops": "1.818e+11",
+  "steps": 300,
+  "batch": 8,
+  "seq_len": 128,
+  "dataset": "roneneldan/TinyStories (validation[:3000], limit=None)",
+  "trainable_parameters": 98624
+}

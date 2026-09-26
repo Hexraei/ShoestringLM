@@ -1,0 +1,9 @@
+Model: shoestring-30m
+  embeddings (tied with output head)        3,145,728
+  per transformer block                     1,377,024
+  all 20 blocks                            27,540,480
+  final norm                                      384
+  TOTAL trainable parameters               30,686,592
+
+Cap check: 30,686,592 <= 50,000,000 -> PASS
+{"embeddings (tied with output head)": 3145728, "per transformer block": 1377024, "all 20 blocks": 27540480, "final norm": 384, "TOTAL trainable parameters": 30686592}

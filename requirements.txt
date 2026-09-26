@@ -1,0 +1,5 @@
+torch>=2.2
+tokenizers>=0.19
+datasets>=2.18
+numpy>=1.26
+# eval only: lm-eval
