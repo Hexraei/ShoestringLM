@@ -61,17 +61,16 @@ The FLOP estimate covers a standard 6-parameter-multiplier training approximatio
 
 ## Benchmark results (Track 01 eval set)
 
-`bash scripts/run_eval.sh runs/shoestring/checkpoint.pt` runs all five. The training notebook did not produce eval scores because its HF export failed. The fix is committed; the scores below stay blank until the fixed suite runs against the real published checkpoint:
+`bash scripts/run_eval.sh runs/shoestring/checkpoint.pt` runs all five. The original training notebook did not produce scores because its HF export failed. After the fix, the [public eval-only Kaggle notebook](https://www.kaggle.com/code/hexraei/shoestringlm-gibc-track-01-eval-only/notebook) completed against the published trained checkpoint (v1, GPU T4 x2, 5m 48s). These are its measured zero-shot results; `acc` is unnormalized accuracy, and `acc_norm` is length-normalized accuracy where the harness supplies it:
 
-| Benchmark | Score |
-| --- | --- |
-| HellaSwag (acc) | _pending measured evaluation_ |
-| ARC-Easy (acc) | _pending measured evaluation_ |
-| PIQA (acc) | _pending measured evaluation_ |
-| WinoGrande (acc) | _pending measured evaluation_ |
-| WikiText-103 held-out slice (perplexity) | _pending measured evaluation_ |
+| Benchmark | Acc | Acc norm |
+| --- | ---: | ---: |
+| HellaSwag | 0.2639 | 0.2718 |
+| ARC-Easy | 0.2626 | 0.2572 |
+| PIQA | 0.5620 | 0.5354 |
+| WinoGrande | 0.5114 | n/a |
 
-This small TinyStories model may perform poorly on out-of-domain benchmarks. No above-random claim or score is made until evaluation completes. The interesting story is the measured efficiency per FLOP, with actual benchmark scores reported when available.
+WikiText-103 perplexity: **628.71**, evaluated on the first 200 requested validation rows (21,977 scored tokens after filtering and sequence truncation). This is a held-out slice, not the full WikiText-103 test set. The four multiple-choice scores are low on these out-of-domain tasks; we make no above-random or competitive-performance claim. The run and checkpoint provenance are linked above so the numbers can be inspected.
 
 ## Run it
 
