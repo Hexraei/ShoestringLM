@@ -44,28 +44,34 @@ The training script writes `training_report.json` on every run (hardware, wall t
 
 **Smoke run (committed, reproducible):** 300 steps of the tiny config on a 2-core CPU, ~29k tokens/sec, loss 6.24 -> 4.22. Artifacts in `smoke_output/`.
 
-**Full run:** 1 epoch of TinyStories (~550M tokens) at 30.7M params is ~1.0e17 FLOPs, which is roughly **5-8 hours on a single free Kaggle T4**. The exact measured numbers land here after the run:
+**Full training run:** Completed 20,000 steps on the public [Kaggle kernel](https://www.kaggle.com/code/hexraei/notebookc1fbe077f9), v1. The measured numbers below come from the run's `runs/shoestring/training_report.json` in the published checkpoint bundle. The notebook's total runtime (8h 39m 15s) includes setup, export and attempted eval; it is not the training wall time. The benchmark stage failed on an export issue in that run, now fixed in the repo; no scores should be inferred from the training log.
 
-| Metric | Value |
+| Metric | Measured value |
 | --- | --- |
-| Hardware | _filled from training_report.json after the Kaggle run_ |
-| Total training time | _same_ |
-| Tokens trained | _same_ |
-| Estimated FLOPs | _same_ |
+| Hardware | Tesla T4 (Kaggle GPU T4 x2 session) |
+| Training wall time | 28,908.1 seconds (8h 1m 48s) |
+| Training steps | 20,000 |
+| Training tokens | 327,680,000 (batch 32 x sequence 512 x steps 20,000) |
+| Estimated training FLOPs | 6.033e16 (6 x trainable params x training tokens) |
+| Trainable parameters | 30,686,592 |
+| Final training loss | 1.4755 |
+| Final validation loss | 1.1959 (TinyStories validation) |
+
+The FLOP estimate covers a standard 6-parameter-multiplier training approximation and is not a hardware profiler reading. Tokens are repeated training exposures, not a count of unique dataset tokens.
 
 ## Benchmark results (Track 01 eval set)
 
-`bash scripts/run_eval.sh runs/shoestring/checkpoint.pt` runs all five. Numbers land after the full run:
+`bash scripts/run_eval.sh runs/shoestring/checkpoint.pt` runs all five. The training notebook did not produce eval scores because its HF export failed. The fix is committed; the scores below stay blank until the fixed suite runs against the real published checkpoint:
 
 | Benchmark | Score |
 | --- | --- |
-| HellaSwag (acc) | _after full run_ |
-| ARC-Easy (acc) | _after full run_ |
-| PIQA (acc) | _after full run_ |
-| WinoGrande (acc) | _after full run_ |
-| WikiText-103 held-out slice (perplexity) | _after full run_ |
+| HellaSwag (acc) | _pending measured evaluation_ |
+| ARC-Easy (acc) | _pending measured evaluation_ |
+| PIQA (acc) | _pending measured evaluation_ |
+| WinoGrande (acc) | _pending measured evaluation_ |
+| WikiText-103 held-out slice (perplexity) | _pending measured evaluation_ |
 
-Honest expectation, so judges can calibrate: a 30M model trained on TinyStories for one epoch will sit modestly above random on the four accuracy tasks (random is ~25%). The interesting story is the efficiency per FLOP, and we report exactly what we get.
+This small TinyStories model may perform poorly on out-of-domain benchmarks. No above-random claim or score is made until evaluation completes. The interesting story is the measured efficiency per FLOP, with actual benchmark scores reported when available.
 
 ## Run it
 
