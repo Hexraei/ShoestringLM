@@ -59,18 +59,31 @@ The training script writes `training_report.json` on every run (hardware, wall t
 
 The FLOP estimate covers a standard 6-parameter-multiplier training approximation and is not a hardware profiler reading. Tokens are repeated training exposures, not a count of unique dataset tokens.
 
+## Continued training on FineWeb-Edu (v2 and v3)
+
+After the v1 TinyStories run, training continued from the same checkpoint on a public general-domain web sample (HuggingFaceFW/fineweb-edu, sample-10BT), same model, same tokenizer, lower LR (7e-5 cosine). The v3 run is public: [ShoestringLM v3 wider FineWeb training](https://www.kaggle.com/code/hexraei/shoestringlm-v3-wider-fineweb-training) (Kaggle, GPU T4 x2).
+
+| Run | New data | Steps | Hardware | Wall time | Notebook |
+| --- | --- | --- | --- | --- | --- |
+| v1 | TinyStories | 20,000 | Tesla T4 (T4 x2 session) | 28,908.1 s | [public training](https://www.kaggle.com/code/hexraei/notebookc1fbe077f9) + [public eval](https://www.kaggle.com/code/hexraei/shoestringlm-gibc-track-01-eval-only/notebook) |
+| v2 | 6,000 FineWeb-Edu docs | 4,000 + 4,000 | T4 x2 | recorded in run bundles | not published |
+| v3 | 20,000 FineWeb-Edu docs (disjoint from v2's 6,000) | 8,000 (checkpoints at 4k/8k) | T4 x2 | 12,755.9 s | [public](https://www.kaggle.com/code/hexraei/shoestringlm-v3-wider-fineweb-training) |
+
+The web sample has NOT been audited for overlap with benchmark questions, so v2/v3 scores are not contamination-free claims.
+
 ## Benchmark results (Track 01 eval set)
 
-`bash scripts/run_eval.sh runs/shoestring/checkpoint.pt` runs all five. The original training notebook did not produce scores because its HF export failed. After the fix, the [public eval-only Kaggle notebook](https://www.kaggle.com/code/hexraei/shoestringlm-gibc-track-01-eval-only/notebook) completed against the published trained checkpoint (v1, GPU T4 x2, 5m 48s). These are its measured zero-shot results; `acc` is unnormalized accuracy, and `acc_norm` is length-normalized accuracy where the harness supplies it:
+`bash scripts/run_eval.sh <checkpoint>` runs all five. Zero-shot unnormalized accuracy (`acc`), same eval code and same 200-row WikiText-103 validation slice (21,977 scored tokens) for every checkpoint. v1 scores come from the public eval-only notebook; v2 and v3 scores were measured with the same eval code in the Kaggle runs described above (v3 notebook linked; the v2 notebook is not published).
 
-| Benchmark | Acc | Acc norm |
-| --- | ---: | ---: |
-| HellaSwag | 0.2639 | 0.2718 |
-| ARC-Easy | 0.2626 | 0.2572 |
-| PIQA | 0.5620 | 0.5354 |
-| WinoGrande | 0.5114 | n/a |
+| Benchmark | v1 | v2 4k | v2 8k | v3 4k | v3 8k |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| HellaSwag | 0.2639 | 0.2671 | 0.2680 | 0.2664 | 0.2674 |
+| ARC-Easy | 0.2626 | 0.2988 | 0.2971 | 0.3035 | 0.3009 |
+| PIQA | 0.5620 | 0.5495 | 0.5490 | 0.5539 | 0.5544 |
+| WinoGrande | 0.5114 | 0.5059 | 0.5107 | 0.5233 | 0.5130 |
+| WikiText-103 PPL (200-row slice) | 628.71 | 33.47 | 34.45 | 28.06 | 25.51 |
 
-WikiText-103 perplexity: **628.71**, evaluated on the first 200 requested validation rows (21,977 scored tokens after filtering and sequence truncation). This is a held-out slice, not the full WikiText-103 test set. The four multiple-choice scores are low on these out-of-domain tasks; we make no above-random or competitive-performance claim. The run and checkpoint provenance are linked above so the numbers can be inspected.
+Headline checkpoint: v3 at 4,000 steps. Versus v1: ARC-Easy +4.09 pts, WinoGrande +1.19 pts, HellaSwag +0.25 pts, PIQA -0.81 pts, perplexity 628.71 -> 28.06. v3 at 8k has the lowest perplexity (25.51) but gives back some ARC-Easy and WinoGrande. No checkpoint wins every metric. The multiple-choice scores remain near or below the task baselines on these out-of-domain benchmarks, and we make no competitive-performance claim. The v1 perplexity of 628.71 reflects a TinyStories-only model on Wikipedia text; the drop comes from adding general web text. The held-out slice is not the full WikiText-103 test set.
 
 ## Run it
 
